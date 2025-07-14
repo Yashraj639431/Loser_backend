@@ -17,8 +17,10 @@ const createUser = asyncHandler(async (req, res) => {
 
 // Login user
 const loginUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-  const findUser = await User.findOne({ $or: [{ email }, { username }] });
+  const { username, email, mobile, password } = req.body;
+  const findUser = await User.findOne({
+    $or: [{ email }, { username }, { mobile }],
+  });
   if (findUser && (await findUser.isPasswordMatched(password))) {
     const refreshToken = await generateRefreshToken(findUser?._id);
     res.cookie("refreshToken", refreshToken, {
@@ -39,6 +41,5 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid Credentials");
   }
 });
-
 
 module.exports = { createUser, loginUser };
